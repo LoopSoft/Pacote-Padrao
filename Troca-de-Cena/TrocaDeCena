@@ -1,0 +1,11 @@
+using UnityEngine;
+using System.Collections;
+
+public class TrocaDeCena : MonoBehaviour {
+
+    public string NomeDaCena;
+    public void TrocaCena()
+    {
+        Application.LoadLevel(NomeDaCena);
+    }
+}
