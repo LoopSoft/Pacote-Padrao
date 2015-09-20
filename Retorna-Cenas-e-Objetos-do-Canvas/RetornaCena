@@ -10,8 +10,10 @@ public class RetornaCena : MonoBehaviour
 	public bool PrimeiraCena = false;
 	//Objeto com a mensagem para sair.
 	public GameObject MensagemParaSairDoAplicativo;
-	//cenas atual e a cena que deve retorna quando for clicado no botao ou no "escape".
-	public GameObject CenaAtual, CenaAnterior;
+    //Objeto atual e a Objeto que deve retorna quando for clicado no botao ou no "escape".
+    public GameObject ObjetoAtual, ObjetoAnterior;
+    //Cena atual e a Cena que deve retorna quando for clicado no botao ou no "escape".
+    public string CenaAnterior;
 
 	void Update () 
 	{
@@ -23,33 +25,46 @@ public class RetornaCena : MonoBehaviour
 	/// </summary>
 	IEnumerator RetornaComEscape()
 	{
-		if(Input.GetKeyUp(KeyCode.Escape) && PrimeiraCena == false)
-		{
-			CenaAtual.SetActive(false);
-			CenaAnterior.SetActive(true);
-			yield return new WaitForSeconds(0.3f);
-		}
-		else if(Input.GetKeyDown(KeyCode.Escape) && PrimeiraCena == true)
-		{
-			MensagemParaSairDoAplicativo.SetActive(true);
-			yield return new WaitForSeconds(0.1f);
-		}
+        if (Input.GetKeyUp(KeyCode.Escape) && PrimeiraCena == false && ObjetoAtual != null && ObjetoAnterior != null)
+        {
+            ObjetoAtual.SetActive(false);
+            ObjetoAnterior.SetActive(true);
+            yield return new WaitForSeconds(0.3f);
+        }
+        else if (Input.GetKeyUp(KeyCode.Escape) && PrimeiraCena == false && CenaAnterior != "")
+        {
+            Application.LoadLevel(CenaAnterior);
+        }
+        else if (Input.GetKeyDown(KeyCode.Escape) && PrimeiraCena == true)
+        {
+            MensagemParaSairDoAplicativo.SetActive(true);
+            yield return new WaitForSeconds(0.1f);
+        }
+       
 	}
 	/// <summary>
 	/// Retornas the COM botao.
-	/// funçao com o intuito de retorna uma cena usando um botao qualquer na tela.
+	/// funçao com o intuito de retorna uma Objeto usando um botao qualquer na tela.
 	/// </summary>
-	public void RetornaComBotao(){
-		CenaAtual.SetActive(false);
-		CenaAnterior.SetActive(true);
+	public void RetornaObjetoComBotao(){
+        ObjetoAtual.SetActive(false);
+        ObjetoAnterior.SetActive(true);
 	}
-	/// <summary>
-	/// Quit this instance.
-	/// funçao para sair do aplicativo.
-	/// usado na tela de mensagem de sair.
-	/// </summary>
-	public void Quit()
+    /// <summary>
+    /// funçao com o intuito de retorna uma cena usando um botao qualquer na tela.
+    /// </summary>
+    public void RetornaCenaComBotao()
+    {
+        Application.LoadLevel(CenaAnterior);
+    }
+    /// <summary>
+    /// Quit this instance.
+    /// funçao para sair do aplicativo.
+    /// usado na tela de mensagem de sair.
+    /// </summary>
+    public void Quit()
 	{
 		Application.Quit();
 	}
 }
+
