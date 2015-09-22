@@ -1,2 +1,2 @@
 # Pacote Padrao
-Repositório com os scripts padrões, isso que dizer que aqui sera guardado aqueles scripts feitos para serem suado em outro projetos, todos devem estar comentados da melhor forma possível.
+Repositório com os scripts padrões, aqui serão guardados aqueles scripts feitos para serem aproveitados em outros projetos, todos devem estar documentados da melhor forma possível.
