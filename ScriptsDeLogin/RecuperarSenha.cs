@@ -2,6 +2,5 @@
 using System.Collections;
 
 public class RecuperarSenha : MonoBehaviour {
-
-	
+    
 }

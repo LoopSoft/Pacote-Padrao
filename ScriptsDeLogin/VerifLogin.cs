@@ -5,6 +5,7 @@ using System.Collections;
 public class VerifLogin : MonoBehaviour {
 
     public Banco _banco;
+
     public InputField _login;
     public InputField _senha;
 
