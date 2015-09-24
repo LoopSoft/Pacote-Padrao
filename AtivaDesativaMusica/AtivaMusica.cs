@@ -10,7 +10,7 @@ public class AtivaMusica : MonoBehaviour {
     /// desativa o audio anterio e ativa o atual.
     /// </summary>
     /// <param name="Audio"></param>
-    public void play(GameObject Audio)
+    public void VerificaAudio(GameObject Audio)
     {
         if (_contador == 1)
         {
