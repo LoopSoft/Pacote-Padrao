@@ -14,14 +14,14 @@ public class AtivaMusica : MonoBehaviour {
     {
         if (_contador == 1)
         {
-            if(_musica != null)
+            if (_musica != null)
                 _musica.GetComponent<AudioSource>().Stop();
 
             _musica = Audio;
             ++_contador;
             _musica.GetComponent<AudioSource>().Play();
         }
-        else if (_contador == 2)
+        else if (_contador == 2 && _musica != Audio)
         {
             _musica.GetComponent<AudioSource>().Stop();
             _musica = Audio;
