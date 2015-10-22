@@ -3,17 +3,15 @@
 /// ele também controla o volume atravez de uma scrollbar.
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 public class ControleDeAudio : MonoBehaviour {
-
-    //public GameObject _objAudio;
-    int _contador = 2;
-
+    
     /// <summary>
     /// volume inicial do áudio de minimo = 0 a máximo = 1
     /// </summary>
     public float _volume = 1;
     public Scrollbar _barraDoVolume;
+
+    int _contador = 2;
 
     void Start()
     {
