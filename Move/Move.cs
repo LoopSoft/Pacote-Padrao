@@ -32,7 +32,7 @@ public class Move : MonoBehaviour {
         int direction = Random.Range(1,5);
 
         moveByInput(direction, transform.position);
-        //print(direction + " - " + transform.position);
+        print(direction + " - " + transform.position);
     }
 
     public void moveByInput(int direction, Vector3 initPos)
@@ -44,19 +44,19 @@ public class Move : MonoBehaviour {
         {
             case 1:
                 dist = Vector3.Distance(transform.position, new Vector3(initPos.x, initPos.y + stepSize, initPos.z));
-                transform.Translate(new Vector3(0, dist * Time.deltaTime, 0));
+                transform.Translate(new Vector3(0, dist, 0));
                 break;
             case 2:
                 dist = Vector3.Distance(transform.position, new Vector3(initPos.x + stepSize, initPos.y, initPos.z));
-                transform.Translate(new Vector3(dist * Time.deltaTime, 0, 0));
+                transform.Translate(new Vector3(dist, 0, 0));
                 break;
             case 3:
                 dist = Vector3.Distance(transform.position, new Vector3(initPos.x, initPos.y - stepSize, initPos.z));
-                transform.Translate(new Vector3(0, -dist * Time.deltaTime, 0));
+                transform.Translate(new Vector3(0, -dist, 0));
                 break;
             case 4:
                 dist = Vector3.Distance(transform.position, new Vector3(initPos.x - stepSize, initPos.y, initPos.z));
-                transform.Translate(new Vector3(-dist * Time.deltaTime, 0, 0));
+                transform.Translate(new Vector3(-dist, 0, 0));
                 break;
         }
     }
