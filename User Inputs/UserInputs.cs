@@ -11,6 +11,9 @@ using System.Collections;
 
 public class UserInputs : MonoBehaviour {
 
+    private bool getInputEnabled;
+    public float mouseMoveAuxX, mouseMoveAuxY;
+
     public float sensibility = .3f;       //Sensibilidade para identificação do movimento
     public int generatedValue, oldValue;      //Valor que será enviado pra classe responsável pelo movimento
     public Move m;
@@ -38,11 +41,21 @@ public class UserInputs : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if(Input.GetMouseButton(0))
+        if (getInputEnabled && Input.GetMouseButton(0))
+        {
+            mouseMoveAuxX = 0;
+            mouseMoveAuxY = 0;
             generatedValue = input2Direction();
+        }
+
+        if (Input.GetMouseButtonUp(0))
+            getInputEnabled = true;
 
         if (generatedValue != oldValue)
-            m.moveByInput(generatedValue, transform.position);
+        {
+            m.moveByInput(generatedValue);
+            oldValue = generatedValue;
+        }
     }
 
     /// <summary>
@@ -52,17 +65,32 @@ public class UserInputs : MonoBehaviour {
     /// <returns></returns>
     int input2Direction ()
     {
-        if (Input.GetAxis("Mouse X") > sensibility)
+        mouseMoveAuxX += Input.GetAxis("Mouse X") * Mathf.Pow(sensibility, -1);
+        mouseMoveAuxX = Mathf.Clamp(mouseMoveAuxX, -1,1);
+        mouseMoveAuxY += Input.GetAxis("Mouse Y") * Mathf.Pow(sensibility, -1);
+        mouseMoveAuxY = Mathf.Clamp(mouseMoveAuxY, -1, 1);
+
+        if (mouseMoveAuxX > sensibility)
+        {
+            getInputEnabled = false;
             return 2;
-        else if (Input.GetAxis("Mouse X") < -sensibility)
+        }
+        else if (mouseMoveAuxX < -sensibility)
+        {
+            getInputEnabled = false;
             return 4;
-        else if (Input.GetAxis("Mouse Y") > sensibility)
+        }
+        else if (mouseMoveAuxY > sensibility)
+        {
+            getInputEnabled = false;
             return 1;
-        else if (Input.GetAxis("Mouse Y") < -sensibility)
+        }
+        else if (mouseMoveAuxY < -sensibility)
+        {
+            getInputEnabled = false;
             return 3;
+        }
         else
             return 0;
-
-        oldValue = generatedValue;
     }
 }
