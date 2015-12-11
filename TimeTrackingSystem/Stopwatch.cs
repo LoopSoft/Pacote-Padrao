@@ -4,50 +4,65 @@ using System.Collections;
 
 public class Stopwatch : MonoBehaviour
 {
-    public bool UseInvoke;
+    public bool useInvoke;
+    public bool useText;                  //Usar texto ou imagem. Ex.: Quando se quer fazer tipo uma loading bar
 
-    public Text second_text;
+    public Image seconds_Image_bar;
+    public Text seconds_Text;
     public static float second = 60;
-    public GameObject end_game;
-    public string scene2LoadOnGO;           //Cena que irá carregar quando der gameover
+    public float init_seconds = 60;
+    public GameObject end_Game;
+    public string scene_2Load_OnGO;         //Cena que irá carregar quando der gameover
 
-    public float secBeforeRestart = 4;
+    public float sec_Before_Restart = 4;
 
     public static bool over_time = false;
 
     IEnumerator RestartGame()
     {
-        yield return new WaitForSeconds(secBeforeRestart);
-        Application.LoadLevel(scene2LoadOnGO);
+        yield return new WaitForSeconds(sec_Before_Restart);
+        Application.LoadLevel(scene_2Load_OnGO);
     }
 
     void Start()
     {
-        second = 60;
+        second = init_seconds;
         over_time = false;
 
-        if (UseInvoke)
+        if (useInvoke)
         {
             Invoke("cronometer", 1);
         }
+
+        if (useText && !seconds_Text)
+            Debug.LogError("Por favor atribua um valor a variável seconds_Text");
+        if(!useText && !seconds_Image_bar)
+            Debug.LogError("Por favor atribua um valor a variável seconds_Image_Bar");
     }
     void Update()
     {
-        if (UseInvoke)
+        if (!useInvoke)
         {
             if (!over_time)
             {
-                if (second > 0)
+                if (second > 0 && !PauseGameSystem.gamePaused)
                     second -= Time.deltaTime;
-                else
+                else if(second < 0)
                 {
                     over_time = true;
-                    end_game.SetActive(true);
+                    end_Game.SetActive(true);
                     StartCoroutine(RestartGame());
                 }
             }
 
-            second_text.text = second.ToString("f0");
+            showSecUI();
+        }
+        else
+        {
+            if (PauseGameSystem.gamePaused)
+                CancelInvoke("cronometer");
+            else
+                Invoke("cronometer", 1);
         }
     }
 
@@ -58,10 +73,17 @@ public class Stopwatch : MonoBehaviour
         else
         {
             over_time = true;
-            end_game.SetActive(true);
+            end_Game.SetActive(true);
             StartCoroutine(RestartGame());
         }
 
-        second_text.text = second.ToString("f0");
+        showSecUI();
+    }
+
+    void showSecUI() {
+        if (useText)
+            seconds_Text.text = second.ToString("f0");
+        else 
+            seconds_Image_bar.fillAmount = (second/init_seconds);
     }
 }

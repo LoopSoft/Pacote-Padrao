@@ -10,7 +10,7 @@
 using UnityEngine;
 using UnityEngine.Assertions;
 using System.Collections;
-
+/*
 #if UNITY_EDITOR
 using UnityEditor;
 
@@ -38,10 +38,10 @@ public class UserInputEditor : Editor
     }
 }
 #endif
-
+*/
 public class UserInputs : MonoBehaviour {
 
-    public bool getInputByUI;           //Modo de entrada por interface ou por movimento de mouse ou toque
+    //public bool getInputByUI;           //Modo de entrada por interface ou por movimento de mouse ou toque
     private bool getInputEnabled;       //Modo de entrada por slide (arrastando o dedo)
     private float mouseMoveAuxX, mouseMoveAuxY;
 
@@ -49,7 +49,7 @@ public class UserInputs : MonoBehaviour {
     public int generatedValue, oldValue;      //Valor que será enviado pra classe responsável pelo movimento
 
     //-------INIT Joystick Mode---------------------------------
-    public GameObject Joystick;             //Somente usado para controle por interface
+    public GameObject Joystick, joystickParent;             //Somente usado para controle por interface
     public Vector3 initPos, desloc;
     //END JM-----------------------------------------------------
 
@@ -70,10 +70,10 @@ public class UserInputs : MonoBehaviour {
         //Checa se a variavel m foi atribuida-------------
         //Assert.IsTrue(GetComponent<Move>(), "Impossível atribuir valor a variavel m, classe Move não encontrada neste objeto.");
 
-        if (getInputByUI)
+        if (PlayerPrefsManager.inputType == 0)
         {
-            if (!Joystick)
-                Debug.LogError("variavel joystick não foi atribuída");
+            if (!Joystick && !joystickParent)
+                Debug.LogError(transform.name+": variaveis joystick/joystickParent não foram atribuída");
         }
 
         if (!m)
@@ -85,31 +85,41 @@ public class UserInputs : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (!getInputByUI)
+        if (!Stopwatch.over_time && !PauseGameSystem.gamePaused)
         {
-            if (getInputEnabled)
+            switch (PlayerPrefsManager.inputType)
             {
-                if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
-                {
-                    mouseMoveAuxX = 0;
-                    mouseMoveAuxY = 0;
-                    generatedValue = touch2Direction();
-                }
-            }
+                case 0:
+                    joystickParent.SetActive(true);
+                    UIAnalogic2Direction();
+                    break;
+                case 1:
+                    joystickParent.SetActive(false);
+                    acceleration2Dir();
+                    break;
+                case 2:
+                    if (getInputEnabled)
+                    {
+                        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
+                        {
+                            mouseMoveAuxX = 0;
+                            mouseMoveAuxY = 0;
+                            generatedValue = touch2Direction();
+                        }
+                    }
 
-            if (Input.GetMouseButtonUp(0))
-                getInputEnabled = true;
+                    if (Input.GetMouseButtonUp(0))
+                        getInputEnabled = true;
 
-            if (generatedValue != oldValue)
-            {
-                PlayerMoved = true;
-                m.moveByInput(generatedValue);
-                oldValue = generatedValue;
+                    if (generatedValue != oldValue)
+                    {
+                        PlayerMoved = true;
+                        m.moveByInput(generatedValue);
+                        oldValue = generatedValue;
+                    }
+                    break;
             }
         }
-
-        if (getInputByUI && Joystick)
-            UIAnalogic2Direction();
     }
 
     /// <summary>
@@ -186,6 +196,16 @@ public class UserInputs : MonoBehaviour {
     }
 
     /// <summary>
+    /// Transforma o valor do acelerometro em direção
+    /// </summary>
+    void acceleration2Dir()
+    {
+        Vector3 desloc = Input.acceleration;
+
+        m.realtimeMoveByInput(desloc.x * (10/sensibility), desloc.y * (10/sensibility));
+    }
+
+    /// <summary>
     /// UI input, simplesmente recebe um valor e envia para a classe de movimento
     /// Aconselhável para uso quando se tem um botão para cada direção.
     /// 1 = Cima, 2 = Direita, 3 = Baixo, 4 = Esquerda.
@@ -199,8 +219,7 @@ public class UserInputs : MonoBehaviour {
 
     /// <summary>
     /// UI input, simplesmente recebe um valor e envia para a classe de movimento
-    /// Aconselhável para uso quando se tem um botão para cada direção.
-    /// 1 = Cima, 2 = Direita, 3 = Baixo, 4 = Esquerda.
+    /// Aconselhável para uso quando se tem um joystick.
     /// </summary>
     /// <returns></returns>
     public void UIAnalogic2Direction()

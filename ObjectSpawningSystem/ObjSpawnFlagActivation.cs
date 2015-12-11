@@ -20,6 +20,7 @@ public class ObjSpawnFlagActivation : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D other)
     {
         ObjSpawn.canInstantiate = true;
+        ScoreSystem.addScore();
 
         Destroy(gameObject);
     }
