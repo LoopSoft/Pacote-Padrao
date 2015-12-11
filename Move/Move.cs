@@ -6,9 +6,11 @@
 /// A segunda por geração automática e aleatória: Quando há necessidade que o objeto se mova aleatóriamente 
 /// de tempos em tempos.
 /// </summary>
-using UnityEditor;
 using UnityEngine;
 using System.Collections;
+
+#if UNITY_EDITOR
+using UnityEditor;
 
 //Custom Inspector variables
 [CustomEditor(typeof(Move)), CanEditMultipleObjects]
@@ -25,14 +27,37 @@ public class moveEditor : Editor
     public override void OnInspectorGUI()
     {
         var move = target as Move;
+
+        move.isRealtimeMov = EditorGUILayout.Toggle("Real Time Mov?", move.isRealtimeMov);
+
         move.isRandom = GUILayout.Toggle(move.isRandom, "Is Random?");
         if (move.isRandom)
         {
             move.movFreq = EditorGUILayout.FloatField("Mov Freq", move.movFreq);
 
-            m_Property = m_Object.FindProperty("rangeDir");
-            EditorGUILayout.PropertyField(m_Property, new GUIContent("MyLabel"), true);
-            m_Object.ApplyModifiedProperties();
+            if (!move.isRealtimeMov)
+            {
+                move.stepSize = EditorGUILayout.FloatField("Step Size", move.stepSize);
+
+                m_Property = m_Object.FindProperty("rangeDir");
+                EditorGUILayout.PropertyField(m_Property, new GUIContent("Direções "), true);
+                m_Object.ApplyModifiedProperties();
+            }
+            else
+            {
+                move.speed = EditorGUILayout.FloatField("speed", move.speed);
+            }
+        }
+        else
+        {
+            if (!move.isRealtimeMov)
+            {
+                move.stepSize = EditorGUILayout.FloatField("Step Size", move.stepSize);
+            }
+            else
+            {
+                move.speed = EditorGUILayout.FloatField("speed", move.speed);
+            }
         }
 
         move.hasLimitations = GUILayout.Toggle(move.hasLimitations, "Has limitations?");
@@ -42,9 +67,10 @@ public class moveEditor : Editor
             move.Min = EditorGUILayout.Vector2Field("XY Min", move.Min);
         }
 
-        move.stepSize = EditorGUILayout.FloatField("Step Size", move.stepSize);
+        
     }
 }
+#endif
 
 public class Move : MonoBehaviour {
 
@@ -54,8 +80,9 @@ public class Move : MonoBehaviour {
     public bool hasLimitations;     //Existe limitação no mapa
         public Vector2 Max,Min;     //Maxima e mínima posição que o objeto pode se movimentar
 
-    public float stepSize = 1;          //Quanto o objeto deve se mover
-    public int[] rangeDir = {1,5};         //Intervalo de direção Ex.: rangeDir[0] = 1, rangeDir[1] = 5; será sorteado aleatóriamente um valor entre 1 e 4
+    public bool isRealtimeMov;      //Flag que indica se o movimento do objeto vai ser por turno (celula/celula) ou em tempo real (aplicando velocidade em x e y)
+        public float stepSize = 1, speed;          //Quanto o objeto deve se mover velocidade de movimento etc
+        public int[] rangeDir = {1,5};         //Intervalo de direção Ex.: rangeDir[0] = 1, rangeDir[1] = 5; será sorteado aleatóriamente um valor entre 1 e 4
 
 	// Use this for initialization
 	void Start () {
@@ -73,8 +100,11 @@ public class Move : MonoBehaviour {
     /// <summary>
     /// Gera um número aleatório para movimento
     /// </summary>
-    void randomMove ()
+    public void randomMove ()
     {
+        if (movFreq > .8f)
+            movFreq -= .1f;
+
         int direction = Random.Range(rangeDir[0], rangeDir[1]);
 
         moveByInput(direction);
@@ -83,6 +113,7 @@ public class Move : MonoBehaviour {
 
     /// <summary>
     /// Movimenta para uma direção dependendo da entrada
+    /// Aconselhável para uso em jogos de turno.
     /// </summary>
     /// <param name="direction"></param> direção em que o objeto se movimentará: 1 = Cima, 2 = Direita, 3 = Baixo, 4 = Esquerda
     public void moveByInput(int direction)
@@ -110,6 +141,16 @@ public class Move : MonoBehaviour {
 
                 break;
         }
+    }
+
+    /// <summary>
+    /// Movimenta para uma direção dependendo da entrada
+    /// Aconselhável para uso em jogos de movimento em tempo real.
+    /// </summary>
+    /// <param name="direction"></param> direção em que o objeto se movimentará: 1 = Cima, 2 = Direita, 3 = Baixo, 4 = Esquerda
+    public void realtimeMoveByInput(float x, float y)
+    {
+        transform.Translate(new Vector3(x * Time.deltaTime * speed, y * Time.deltaTime * speed, 0));
     }
     //END METODS
 }
