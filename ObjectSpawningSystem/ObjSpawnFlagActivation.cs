@@ -19,9 +19,15 @@ public class ObjSpawnFlagActivation : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        ObjSpawn.canInstantiate = true;
-        ScoreSystem.addScore();
+        if(other.tag == "Player" || other.tag == "Obstacle")
+            ObjSpawn.canInstantiate = true;
 
+        if (other.tag == "Player")
+        {
+            ScoreSystem.addScore();
+            if (PlayerPrefsManager.bestScore >= 30)
+                Stopwatch.second += 2f;
+        }
         Destroy(gameObject);
     }
 }
