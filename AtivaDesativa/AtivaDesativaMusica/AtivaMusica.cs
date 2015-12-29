@@ -1,37 +1,38 @@
-﻿///Ativa audio e e desativa dependendo do click do botão.
+﻿///Controla a ativação dos áudios por click.
 using UnityEngine;
-using System.Collections;
 public class AtivaMusica : MonoBehaviour {
 
-    [SerializeField]private GameObject _musica;
+    [SerializeField]private GameObject _musica; //ARMAZENA O OBJETO(MUSICA/ÁUDIO) QUE FOI CLICADO POR ULTIMO.   
 
-    int _contador = 1;
+    bool _contador = true;
+
     /// <summary>
-    /// Funcao que verifica se é a primeira vez que ele clica no botão de audio se sim ele reprodus, se for o segundo click ele
-    /// desativa o audio anterio e ativa o atual.
+    /// Função responsável por gerenciar a ativação dos áudios de acordo com o objeto clicado por último.  
     /// </summary>
     /// <param name="Audio"></param>
     public void VerificaAudio(GameObject Audio)
     {
-        if (_contador == 1)
+        if (_contador)
         {
-            if (_musica != null)
-                _musica.GetComponent<AudioSource>().Stop();
+            //INIT
+            if (_musica != null)//PARA A REPRODUÇÃO ANTERIOR, DANDO ESPAÇO PARA O NOVO AUDIO
+                _musica.GetComponent<AudioSource>().Stop(); 
+            //END
 
             _musica = Audio;
-            ++_contador;
+            _contador = false;
             _musica.GetComponent<AudioSource>().Play();
         }
-        else if (_contador == 2 && _musica == Audio)
+        else if (!_contador && _musica == Audio)
         {
-            _contador = 1;
+            _contador = true;
         }
-        else if (_contador == 2 && _musica != Audio)
+        else if (!_contador && _musica != Audio)
         {
             _musica.GetComponent<AudioSource>().Stop();
             _musica = Audio;
             Audio.GetComponent<AudioSource>().Play();
-            _contador = 1;
+            _contador = true;
         }
     }
 }
