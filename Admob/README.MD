@@ -11,3 +11,4 @@ Modo de uso
 Variável Is Test
 ----------------
 * Quando verdadeiro exibe um menu com funcionalidades de requisição de banner, mostrar/esconder banner e destruir banner
+* Quando falso exibe um banner dentro de 10 segundos
